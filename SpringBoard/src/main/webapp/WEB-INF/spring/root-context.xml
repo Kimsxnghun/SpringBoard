@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation=" http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring.xsd
+	http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!-- Root Context: defines shared resources visible to all other web components -->
+	<!-- API(Spring(WEB MVC) + MyBatis(DB)) -->
+	<!-- API(Spring(WEB MVC) + API(Hikari(DB)CP) -->
+	<!-- Hikari(DB)CP : 데이터 베이스 커넥션 풀로 커넥션 객체를 일정 개수 생성 후 효율성 있게 돌려 사용하는 기술 -->	
+	<!-- 히카리 CP 빈 등록 -->
+	<bean id="hikariConfig" class="com.zaxxer.hikari.HikariConfig">
+		<property name="driverClassName"
+			value="com.mysql.jdbc.Driver">
+		</property>
+		<property name="jdbcUrl"
+			value="jdbc:mysql://localhost:3306/mysql"></property>
+			<property name="username" value="root"></property>
+			<property name="password" value="12345"></property>
+	</bean>	
+		
+	<!-- 히카리 CP 설정 --> <!-- DBCP를 생성 -->
+	<bean id="dataSource" class="com.zaxxer.hikari.HikariDataSource"
+		destroy-method="close">
+		<constructor-arg ref="hikariConfig"/>
+	</bean>
+	
+	<!-- DBCP를 사용 --> <!-- Mapper의 메소드를 실행시킴, 실행시키기 위해 scan필요 -->
+	<bean class="org.mybatis.spring.SqlSessionFactoryBean">
+      <property name="dataSource" ref="dataSource"/>
+   </bean>
+   
+	<!-- scan을 통해 맾퍼를 메모리에 올리려고 -->
+	<mybatis-spring:scan base-package="cb.board.mapper"/>
+</beans>
